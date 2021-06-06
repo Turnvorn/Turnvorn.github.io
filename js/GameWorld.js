@@ -42,7 +42,7 @@ class GameWorld {
     this.selection = null;
 
     // Inventory
-    this.coins = 200;
+    this.coins = 190;
 
     // Level start coords
     this.start = { x: 0, y: 0 };
@@ -265,20 +265,26 @@ class GameWorld {
     if (this.towers.length > 0) {
       if (this.wave === 0) this.wave += 1;
       var i;
-      for (i = 0; i < this.wave * this.wave; i++) {
+      for (i = 0; i < 1 + 2 * this.wave; i++) {
         var random = Math.floor(Math.random() * 50) + 1;
-        this.spawnEnemy(
-          i,
-          i / 3,
-          new Enemy(
-            this.context,
-            this.start.x - random,
-            this.start.y,
-            64 * 2,
-            0,
-            1
-          )
+
+        var size = 10;
+        var health = 1;
+        if (this.wave === 8 || this.wave === 12) {
+          size = 30;
+          health = 2;
+        }
+        var enemy = new Enemy(
+          this.context,
+          this.start.x - random,
+          this.start.y,
+          64 * 2,
+          0,
+          1
         );
+        enemy.radius = size;
+        enemy.health = health;
+        this.spawnEnemy(i, i / 3, enemy);
       }
     } else {
       this.levelSeconds = 0; // Round not begun
