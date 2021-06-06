@@ -1,37 +1,54 @@
 class GameWorld {
   constructor(canvasId) {
+    // HTML Canvas object
     this.canvas = null;
     this.context = null;
+    // Screen width and height
     this.width = 1600;
     this.height = 900;
+    // Timestamp for gameloop
+    // to know how many seconds have passed
     this.oldTimeStamp = 0;
+
+    // Array of enemies currently spawned in the level
+    // They will be deleted once they are shot or finished
     this.enemies = [];
+    // Array of owned Towers currently in the level
     this.towers = [];
+
     // Available coordinates to build a tower
-    this.avaiableCoordsStrings = [];
+    // example [[123,456],[999,444]]
     this.availableCoords = [];
-    this.resetCounter = 0;
+    // ...also stored as strings for easy comparison
+    // example ["123,456","999,444"]
+    this.avaiableCoordsStrings = [];
 
     this.level = 1;
     this.levelSeconds = 0;
     this.levelEnemyCounter = 0;
+    this.wave = 0;
     // Make sure available spots in level are only set once
     this.levelHasAvailableSpots = 0;
 
     this.levelSpawnedEnemis = 0;
 
+    // Current mouse position
+    // and snap to grid mouse position relative to that
     this.mouseX = 0;
     this.mouseY = 0;
     this.snapX = 0;
     this.snapY = 0;
-
-    this.coins = 200;
-
-    // Mouse selection
+    // Mouse selection, new tower etc.
     this.selection = null;
 
+    // Inventory
+    this.coins = 200;
+
+    // Level start coords
     this.start = { x: 0, y: 0 };
 
+    // Print coords of each object,
+    // grid, health etc. on screen
     this.debugging = false;
 
     this.init(canvasId);
@@ -41,23 +58,32 @@ class GameWorld {
     this.canvas = document.getElementById(canvasId);
     this.context = this.canvas.getContext("2d");
 
-    this.createWorld();
-
+    // Click listener for inventory, create tower etc.
     this.canvas.addEventListener("click", () => {
       if (this.selection === "dart") {
         this.dartTower();
       }
-      console.log("Clicked " + this.snapX + "," + this.snapY);
+      // TODO: Make more dynamic, not hardcoded per item
       if (this.snapX === 150 && this.snapY === 800) {
         this.selection = "dart";
       } else {
         this.selection = null;
       }
-      console.log(this.selection);
+
+      if (this.debugging) {
+        console.log(this.snapX + "," + this.snapY);
+      }
     });
 
+    // Mouse move listener and store closest grid value
+    // Currently the grid is 50x50 pixels
     this.canvas.addEventListener("mousemove", (e) => {
-      var mousePos = this.getMousePos(this.canvas, e);
+      var mousePos = Mouse.getMousePos(this.canvas, e);
+      this.mouseX = mousePos.x;
+      this.mouseY = mousePos.y;
+      var snap = Mouse.snapToGrid(mousePos.x, mousePos.y);
+      this.snapX = snap.x;
+      this.snapY = snap.y;
     });
 
     // Request an animation frame for the first time
@@ -74,7 +100,7 @@ class GameWorld {
           this.avaiableCoordsStrings,
           this.snapX + "," + this.snapY
         );
-        console.log(this.avaiableCoordsStrings);
+
         this.coins -= 100;
         this.towers.push(
           new Tower(this.context, this.snapX, this.snapY, 0, 0, 0, 1)
@@ -95,6 +121,10 @@ class GameWorld {
     this.context.fillStyle = "#fff";
     this.context.font = "100px Verdana";
     this.context.fillText(this.coins + "$", this.width / 2 - 100, 828 + 36);
+
+    this.context.fillStyle = "#ccc";
+    this.context.font = "50px Verdana";
+    this.context.fillText("WAVE " + this.wave, this.width / 2 - 80, 750);
     this.context.beginPath();
 
     this.context.fillStyle = "#FDE74C";
@@ -108,7 +138,6 @@ class GameWorld {
   createGrid() {
     var currentX = 0;
     var currentY = 0;
-    var divider = 50; // 25 makes 64x36 points
     var width = 1600;
     var height = 900;
 
@@ -134,73 +163,6 @@ class GameWorld {
       this.context.lineTo(width, currentY); // Draw a line
       this.context.stroke(); // Render the path
     }
-  }
-
-  snapToGrid(x, y) {
-    var xWidth = 50;
-    var yWidth = 50;
-
-    var xOffset = x % xWidth; // Get distance from grid
-
-    if (xOffset > xWidth / 2) {
-      // Snap to the right
-      x += xWidth - xOffset;
-    } else {
-      // Snap to the left
-      x -= xOffset; // move to grid
-    }
-
-    var yOffset = y % yWidth; // Get distance from grid
-    if (yOffset > yWidth / 2) {
-      // Snap down
-      y += yWidth - yOffset;
-    } else {
-      // Snap up
-      y -= yOffset; // move to grid
-    }
-
-    return {
-      x: x,
-      y: y
-    };
-  }
-
-  drawCursor() {
-    var x = this.mouseX;
-    var y = this.mouseY;
-
-    var snap = this.snapToGrid(x, y);
-    this.snapX = snap.x;
-    this.snapY = snap.y;
-
-    if (this.debugging) {
-      this.context.fillText(snap.x + "," + snap.y, snap.x, snap.y + 20);
-    }
-    if (this.selection === "dart") {
-      this.context.beginPath();
-      this.context.fillStyle = "#FDE74C";
-      this.context.arc(snap.x, snap.y, 10, 0, 2 * Math.PI);
-      this.context.fillStyle = "rgba(0, 0, 0, 0.1)";
-      this.context.arc(snap.x, snap.y, 150, 0, 2 * Math.PI);
-      this.context.fill();
-    }
-  }
-
-  getMousePos(canvas, evt) {
-    var rect = canvas.getBoundingClientRect();
-    this.mouseX =
-      ((evt.clientX - rect.left) / (rect.right - rect.left)) * canvas.width;
-    this.mouseY =
-      ((evt.clientY - rect.top) / (rect.bottom - rect.top)) * canvas.height;
-    return {
-      x: this.mouseX,
-      y: this.mouseY
-    };
-  }
-
-  createWorld() {
-    this.enemies = [];
-    this.towers = [];
   }
 
   gameLoop(timeStamp) {
@@ -232,7 +194,7 @@ class GameWorld {
 
     if (this.debugging) this.createGrid();
 
-    this.drawCursor();
+    Mouse.drawCursor(this.context, this.mouseX, this.mouseY, this.selection);
 
     this.drawInventory();
 
@@ -287,19 +249,23 @@ class GameWorld {
         [700, 500],
         [600, 300],
         [1000, 300],
-        [1200, 500]
+        [1200, 500],
+        [1500, 300]
       ];
       // Also make a string version for easy comparison
       this.availableCoords.forEach((ele) => {
         this.avaiableCoordsStrings.push(ele[0] + "," + ele[1]);
       });
     }
-    // 64x36
+    // Enemy spawns at these coords
     this.start = { x: 0, y: 400 };
-    // Todo remove with play button
+
+    // Start when first tower gets built
+    // TODO: Use play button or something similar
     if (this.towers.length > 0) {
+      if (this.wave === 0) this.wave += 1;
       var i;
-      for (i = 0; i < 15; i++) {
+      for (i = 0; i < this.wave * this.wave; i++) {
         var random = Math.floor(Math.random() * 50) + 1;
         this.spawnEnemy(
           i,
@@ -319,6 +285,9 @@ class GameWorld {
     }
   }
 
+  // Give each enemy a number 0,1,2...n
+  // Specify at which second he should spawn (0,1,2...etc.)
+  // And which enemy(object) to push to the enemy array
   spawnEnemy(number, second, object) {
     // Check if the enemy has already been placed
     if (this.levelSpawnedEnemis <= number) {
@@ -329,10 +298,11 @@ class GameWorld {
       }
     }
 
-    // New level
+    // New wave when all enemies are dead
     if (this.enemies.length === 0 && this.levelSeconds > 1) {
       this.levelSpawnedEnemis = 0;
       this.levelSeconds = 0;
+      this.wave += 1;
     }
   }
 
@@ -351,11 +321,13 @@ class GameWorld {
       for (var j = 0; j < this.enemies.length; j++) {
         enemy = this.enemies[j];
 
-        if (this.circleIntersect(tower, enemy)) {
+        if (Helpers.circleIntersect(tower, enemy)) {
           enemiesInRange.push(enemy);
 
+          // TODO: This should be elsewhere
+          // DetectCasualties() or something
           if (enemy.health <= 0) {
-            // get index of object with id
+            // TODO: Add to helpers.js
             var removeIndex = this.enemies
               .map(function (item) {
                 return item.id;
@@ -364,32 +336,13 @@ class GameWorld {
 
             // remove object
             this.enemies.splice(removeIndex, 1);
-
-            this.coins += 10;
+            // TODO: This should be elsewhere
+            this.coins += 5;
           }
         }
       }
       tower.enemies = enemiesInRange;
     }
-  }
-
-  rectIntersect(x1, y1, w1, h1, x2, y2, w2, h2) {
-    // Check x and y for overlap
-    if (x2 > w1 + x1 || x1 > w2 + x2 || y2 > h1 + y1 || y1 > h2 + y2) {
-      return false;
-    }
-
-    return true;
-  }
-
-  circleIntersect(obj1, obj2) {
-    var a = obj1.x - obj2.x;
-    var b = obj1.y - obj2.y;
-    var c = Math.sqrt(a * a + b * b);
-
-    if (c > obj1.radius + obj2.radius) return false;
-
-    return true;
   }
 
   clearCanvas() {

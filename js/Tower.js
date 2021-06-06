@@ -20,6 +20,17 @@ class Tower extends GameObject {
   draw() {
     if (this.debug) this.debugging();
 
+    // Bullets in the air
+    if (this.enemies.length > 0) {
+      // Dashed line
+      this.context.beginPath();
+      this.context.setLineDash([5, 15]);
+      this.context.lineWidth = 2;
+      this.context.strokeStyle = "#7b0000";
+      this.context.moveTo(this.x, this.y);
+      this.context.lineTo(this.enemies[0].x, this.enemies[0].y);
+      this.context.stroke();
+    }
     this.context.beginPath();
 
     this.context.fillStyle = "#FDE74C";
@@ -29,7 +40,7 @@ class Tower extends GameObject {
     this.context.beginPath();
 
     if (this.enemies.length > 0) {
-      this.context.fillStyle = "rgba(255, 0, 0, 0.1)";
+      this.context.fillStyle = "rgba(255, 0, 0, 0.2)";
     } else {
       this.context.fillStyle = "rgba(0, 0, 0, 0.05)";
     }
@@ -48,6 +59,7 @@ class Tower extends GameObject {
   };
 
   // Sort enemies by distance travelled
+  // so we can aim at the one in the front
   sort() {
     function compare(a, b) {
       if (a.pixelsTravelled < b.pixelsTravelled) {
@@ -71,7 +83,6 @@ class Tower extends GameObject {
     this.sort();
 
     // Damage
-
     var now = Date.now();
 
     if (this.enemies.length > 0) {
