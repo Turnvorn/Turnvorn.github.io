@@ -8,11 +8,11 @@ class Mouse {
   static drawInventory = (context, coins, wave) => {
     context.fillStyle = "#fff";
     context.font = "100px Verdana";
-    context.fillText(coins + "$", 800, 828 + 36);
+    context.fillText(coins + "$", 1600 / 2 - 100, 828 + 36);
 
     context.fillStyle = "#ccc";
     context.font = "50px Verdana";
-    context.fillText("WAVE " + wave, 800, 750);
+    context.fillText("WAVE " + wave, 1600 / 2 - 80, 750);
     context.beginPath();
 
     context.fillStyle = "#FDE74C";
