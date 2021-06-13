@@ -102,6 +102,10 @@ class GameWorld {
     // Todo remove with play button
     if (this.level === 1) {
       this.spawnLevel_1();
+      // One.spawn(this.context, 
+      //   this.availableCoords, 
+      //   this.avaiableCoordsStrings, 
+      //   this.spawnEnemy)
     }
 
     // Loop over all game objects to update
@@ -126,7 +130,7 @@ class GameWorld {
     Mouse.drawCursor(this.context, this.mouseX, this.mouseY, this.selection);
 
     Mouse.drawInventory(this.context, this.coins, this.wave);
-    //this.drawInventory();
+
     // Loop over all game objects to draw
     for (var i = 0; i < this.enemies.length; i++) {
       this.enemies[i].draw();
@@ -155,25 +159,6 @@ class GameWorld {
         );
       }
     }
-  };
-
-
-  drawInventory = () => {
-    this.context.fillStyle = "#fff";
-    this.context.font = "100px Verdana";
-    this.context.fillText(this.coins + "$", this.width / 2 - 100, 828 + 36);
-
-    this.context.fillStyle = "#ccc";
-    this.context.font = "50px Verdana";
-    this.context.fillText("WAVE " + this.wave, this.width / 2 - 80, 750);
-    this.context.beginPath();
-
-    this.context.fillStyle = "#FDE74C";
-    this.context.font = "25px Verdana";
-    this.context.fillText("DART TOWER 100$", 50, 828 + 36);
-    this.context.fillStyle = "#FDE74C";
-    this.context.arc(150, 800, 20, 0, 2 * Math.PI);
-    this.context.fill();
   };
 
   spawnLevel_1() {

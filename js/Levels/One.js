@@ -38,7 +38,7 @@ class One {
     context.fillStyle = "white";
   };
 
-  spawn(context, availableCoords, avaiableCoordsStrings, spawnEnemy) {
+  static spawn(context, availableCoords, avaiableCoordsStrings, spawnEnemy, levelSpawnedEnemis) {
     // Set available tower building spots
     if (this.hasSetAvailableCoordinates === false) {
       this.hasSetAvailableCoordinates = true;
@@ -63,10 +63,11 @@ class One {
       var i;
       for (i = 0; i < 15; i++) {
         var random = Math.floor(Math.random() * 50) + 1;
+        // TODO: FIX THIS so it works in GameWorld.js
         spawnEnemy(
           i,
           i / 3,
-          new Enemy(context, this.start.x - random, this.start.y, 64 * 2, 0, 1)
+          new Enemy(context, this.start.x - random, this.start.y, 64 * 2, 0, 1),
         );
       }
     }
