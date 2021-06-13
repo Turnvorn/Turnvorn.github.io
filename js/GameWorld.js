@@ -93,6 +93,7 @@ class GameWorld {
     });
   }
 
+  // Creates a new Dart Tower
   dartTower = () => {
     if (this.coins >= 100) {
       if (this.avaiableCoordsStrings.includes(this.snapX + "," + this.snapY)) {
@@ -109,35 +110,6 @@ class GameWorld {
     }
   };
 
-  createGrid() {
-    var currentX = 0;
-    var currentY = 0;
-    var width = 1600;
-    var height = 900;
-
-    // 1600 x 1200
-    // 32 x 18 squares
-    // Makes 50x50 even squares
-
-    for (var i = 0; i < 32; i++) {
-      currentX += 50;
-
-      // Vertical lines
-      this.context.beginPath(); // Start a new path
-      this.context.moveTo(currentX, 0); // Move the pen
-      this.context.lineTo(currentX, height); // Draw a line
-      this.context.stroke(); // Render the path
-    }
-    for (var i = 0; i < 18; i++) {
-      currentY += 50;
-
-      // Horizontal lines
-      this.context.beginPath(); // Start a new path
-      this.context.moveTo(0, currentY); // Move the pen
-      this.context.lineTo(width, currentY); // Draw a line
-      this.context.stroke(); // Render the path
-    }
-  }
 
   gameLoop(timeStamp) {
     // Calculate how much time has passed
@@ -167,7 +139,7 @@ class GameWorld {
       One.draw(this.context, this.availableCoords);
     }
 
-    if (this.debugging) this.createGrid();
+    if (this.debugging) Helpers.createGrid(this.context);
 
     Mouse.drawCursor(this.context, this.mouseX, this.mouseY, this.selection);
 

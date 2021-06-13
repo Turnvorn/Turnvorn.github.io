@@ -25,4 +25,35 @@ class Helpers {
 
     return true;
   }
+
+  // Grid for debugging
+  createGrid(context) {
+    var currentX = 0;
+    var currentY = 0;
+    var width = 1600;
+    var height = 900;
+
+    // 1600 x 1200
+    // 32 x 18 squares
+    // Makes 50x50 even squares
+
+    for (var i = 0; i < 32; i++) {
+      currentX += 50;
+
+      // Vertical lines
+      context.beginPath(); // Start a new path
+      context.moveTo(currentX, 0); // Move the pen
+      context.lineTo(currentX, height); // Draw a line
+      context.stroke(); // Render the path
+    }
+    for (var i = 0; i < 18; i++) {
+      currentY += 50;
+
+      // Horizontal lines
+      context.beginPath(); // Start a new path
+      context.moveTo(0, currentY); // Move the pen
+      context.lineTo(width, currentY); // Draw a line
+      context.stroke(); // Render the path
+    }
+  }
 }
