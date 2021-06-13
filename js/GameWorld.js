@@ -57,7 +57,7 @@ class GameWorld {
   init(canvasId) {
     this.canvas = document.getElementById(canvasId);
     this.context = this.canvas.getContext("2d");
-
+    console.log(canvas.width);
     // Click listener for inventory, create tower etc.
     this.canvas.addEventListener("click", () => {
       if (this.selection === "dart") {
@@ -96,7 +96,7 @@ class GameWorld {
   dartTower = () => {
     if (this.coins >= 100) {
       if (this.avaiableCoordsStrings.includes(this.snapX + "," + this.snapY)) {
-        this.removeItemOnce(
+        Helpers.removeItemOnce(
           this.avaiableCoordsStrings,
           this.snapX + "," + this.snapY
         );
@@ -107,32 +107,6 @@ class GameWorld {
         );
       }
     }
-  };
-
-  removeItemOnce = (arr, value) => {
-    var index = arr.indexOf(value);
-    if (index > -1) {
-      arr.splice(index, 1);
-    }
-    return arr;
-  };
-
-  drawInventory = () => {
-    this.context.fillStyle = "#fff";
-    this.context.font = "100px Verdana";
-    this.context.fillText(this.coins + "$", this.width / 2 - 100, 828 + 36);
-
-    this.context.fillStyle = "#ccc";
-    this.context.font = "50px Verdana";
-    this.context.fillText("WAVE " + this.wave, this.width / 2 - 80, 750);
-    this.context.beginPath();
-
-    this.context.fillStyle = "#FDE74C";
-    this.context.font = "25px Verdana";
-    this.context.fillText("DART TOWER 100$", 50, 828 + 36);
-    this.context.fillStyle = "#FDE74C";
-    this.context.arc(150, 800, 20, 0, 2 * Math.PI);
-    this.context.fill();
   };
 
   createGrid() {
@@ -189,15 +163,16 @@ class GameWorld {
     this.clearCanvas();
 
     if (this.level === 1) {
-      this.drawLevel_1();
+      //One.draw(this.context, this.availableCoords)
+      One.draw(this.context, this.availableCoords);
     }
 
     if (this.debugging) this.createGrid();
 
     Mouse.drawCursor(this.context, this.mouseX, this.mouseY, this.selection);
 
+    //Mouse.drawInventory(this.context, this.coins, this.wave);
     this.drawInventory();
-
     // Loop over all game objects to draw
     for (var i = 0; i < this.enemies.length; i++) {
       this.enemies[i].draw();
@@ -210,6 +185,25 @@ class GameWorld {
     // Keep requesting new frames
     window.requestAnimationFrame((timeStamp) => this.gameLoop(timeStamp));
   }
+
+
+  drawInventory = () => {
+    this.context.fillStyle = "#fff";
+    this.context.font = "100px Verdana";
+    this.context.fillText(this.coins + "$", this.width / 2 - 100, 828 + 36);
+
+    this.context.fillStyle = "#ccc";
+    this.context.font = "50px Verdana";
+    this.context.fillText("WAVE " + this.wave, this.width / 2 - 80, 750);
+    this.context.beginPath();
+
+    this.context.fillStyle = "#FDE74C";
+    this.context.font = "25px Verdana";
+    this.context.fillText("DART TOWER 100$", 50, 828 + 36);
+    this.context.fillStyle = "#FDE74C";
+    this.context.arc(150, 800, 20, 0, 2 * Math.PI);
+    this.context.fill();
+  };
 
   drawLevel_1 = () => {
     this.context.fillStyle = "#63ad83";
@@ -284,6 +278,7 @@ class GameWorld {
         );
         enemy.radius = size;
         enemy.health = health;
+        enemy.color = "black";
         this.spawnEnemy(i, i / 3, enemy);
       }
     } else {

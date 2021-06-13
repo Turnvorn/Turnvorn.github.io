@@ -13,13 +13,15 @@ class Enemy extends GameObject {
     // Progress
     this.pixelsTravelled = 0;
 
+    this.color = "#DB5461";
+
     this.debug = false;
   }
 
   draw() {
     if (this.debug) this.debugging();
-    //Draw a simple square
-    this.context.fillStyle = "#DB5461";
+
+    this.context.fillStyle = this.color;
     this.context.beginPath();
     this.context.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
     this.context.fill();

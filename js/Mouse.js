@@ -1,8 +1,27 @@
 class Mouse {
   static staticProperty = "someValue";
+  static debugging = false;
   static staticMethod() {
     return "static method has been called.";
   }
+
+  static drawInventory = (context, coins, wave) => {
+    context.fillStyle = "#fff";
+    context.font = "100px Verdana";
+    context.fillText(coins + "$", 800, 828 + 36);
+
+    context.fillStyle = "#ccc";
+    context.font = "50px Verdana";
+    context.fillText("WAVE " + wave, 800, 750);
+    context.beginPath();
+
+    context.fillStyle = "#FDE74C";
+    context.font = "25px Verdana";
+    context.fillText("DART TOWER 100$", 50, 828 + 36);
+    context.fillStyle = "#FDE74C";
+    context.arc(150, 800, 20, 0, 2 * Math.PI);
+    context.fill();
+  };
 
   static getMousePos(canvas, evt) {
     var rect = canvas.getBoundingClientRect();
