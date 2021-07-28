@@ -16,6 +16,9 @@ class GameWorld {
     // Array of owned Towers currently in the level
     this.towers = [];
 
+    // Bombs about to explode
+    this.bombs = [];
+
     // Available coordinates to build a tower
     // example [[123,456],[999,444]]
     this.availableCoords = [];
@@ -42,7 +45,7 @@ class GameWorld {
     this.selection = null;
 
     // Inventory
-    this.coins = 190;
+    this.coins = 500;
 
     // Level start coords
     this.start = { x: 0, y: 0 };
@@ -52,7 +55,7 @@ class GameWorld {
     this.debugging = false;
 
     this.init(canvasId);
-  }
+  } 
 
   init(canvasId) {
     this.canvas = document.getElementById(canvasId);
@@ -61,7 +64,10 @@ class GameWorld {
     // Click listener for inventory, create tower etc.
     this.canvas.addEventListener("click", () => {
       if (this.selection === "dart") {
-        this.dartTower();
+        //this.dartTower();
+
+        //Testing TODO remove
+        this.bombTower();
       }
       // TODO: Make more dynamic, not hardcoded per item
       if (this.snapX === 150 && this.snapY === 800) {
@@ -161,6 +167,23 @@ class GameWorld {
     }
   };
 
+  // Creates a new Bomber
+  bombTower = () => {
+    if (this.coins >= 200) {
+      if (this.avaiableCoordsStrings.includes(this.snapX + "," + this.snapY)) {
+        Helpers.removeItemOnce(
+          this.avaiableCoordsStrings,
+          this.snapX + "," + this.snapY
+        );
+
+        this.coins -= 200;
+        this.towers.push(
+          new Bomber(this.context, this.snapX, this.snapY, 0, 0, this.bombs)
+        );
+      }
+    }
+  };
+
   spawnLevel_1() {
     // Set available tower building spots
     if (this.levelHasAvailableSpots != 1) {
@@ -244,6 +267,8 @@ class GameWorld {
       this.enemies[i].isColliding = false;
     }
 
+    
+
     for (var i = 0; i < this.towers.length; i++) {
       tower = this.towers[i];
       var enemiesInRange = [];
@@ -273,6 +298,24 @@ class GameWorld {
       }
       tower.enemies = enemiesInRange;
     }
+
+    // Detect which bombs will damange enemies
+    if(this.bombs.length > 0) console.log(this.bombs)
+    for (var i = 0; i < this.bombs.length; i++) {
+      var bomb = this.bombs[i];
+
+      for (var j = 0; j < this.enemies.length; j++) {
+        enemy = this.enemies[j];
+
+        if (Helpers.circleIntersect(bomb, enemy)) {
+          enemy.health -= 1;
+        }
+      }
+    
+    }
+    // Bombs can only damage once
+    this.bombs = [];
+
   }
 
   clearCanvas() {
